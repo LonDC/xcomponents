@@ -1,8 +1,9 @@
 {
-  "name": "xcomponents",
+  "name": "ldcvia-xcomponents",
   "version": "0.1.0",
   "authors": [
-    "Mark Leusink <m.leusink@gmail.com>"
+    "Mark Leusink <m.leusink@gmail.com>",
+    "Matt White <matt@ldcvia.com>"
   ],
   "license": "MIT",
   "ignore": [
