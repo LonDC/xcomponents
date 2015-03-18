@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-18 3:12 */
+/* xcomponents 0.1.0 2015-03-18 4:32 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -23,7 +23,7 @@ app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
 
 }]);
 
-app.factory('RESTFactory', ['$http', function($http) {
+app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($http, $rootScope, $cookieStore) {
 
 	return {
 
@@ -60,7 +60,9 @@ app.factory('RESTFactory', ['$http', function($http) {
 
 		saveNew : function(url, item) {
 
-			url = url.replace(":id", "");
+			var date = new Date();
+			var time = date.getTime();
+			var url = url.replace(":id", time);
 
 			return $http.put(url, item).then( function(res) {
 				return res.data;
@@ -70,7 +72,7 @@ app.factory('RESTFactory', ['$http', function($http) {
 
 		update : function(url, item) {
 
-			url = url.replace(":id", "");
+			url = url.replace(":id", item.__unid);
 
 			return $http.post(url, item).then( function(res) {
 				return res.data;
@@ -79,7 +81,7 @@ app.factory('RESTFactory', ['$http', function($http) {
 		},
 
 		delete : function(url, item) {
-			url = url.replace(":id", item.id);
+			url = url.replace(":id", item.__unid);
 			return $http.delete(url);
 		},
 
@@ -413,7 +415,7 @@ if (hasNativeHTMLImportsSupport) {
 app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location) {
 	if ($cookieStore.get('apikey')){
 		$rootScope.apikey = $cookieStore.get('apikey');
-		$rootScope.user = $cookieStore.get('user');
+		$rootScope.username = $cookieStore.get('username');
 	}
 	if ($rootScope.apikey == null) {
 		console.log('We need to log in');
@@ -655,7 +657,7 @@ app.factory('xcUtils', function($rootScope, $http) {
 			var f = $rootScope.config['fieldsFormula'];
 
 			for (var i=0; i<f.length; i++) {
-				
+
 				var fieldName = f[i].field;
 				var fields = f[i].formula;
 				var _res = [];
@@ -667,6 +669,38 @@ app.factory('xcUtils', function($rootScope, $http) {
 				form[fieldName] = _res.join(' ');
 
 			}
+
+			//Add LDC Via fields
+			form.From = $rootScope.username;
+			form.Body = {
+				"type": "multipart",
+				"content": [{
+					"contentType": "text/html; charset=UTF-8",
+					"data": form.Body__parsed
+				}]
+			};
+			try{
+				var fileInput = document.getElementById('file');
+				if (fileInput){
+					var file = fileInput.files[0];
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						form.Body.content.push({
+							"contentType": file.type + "; name=\"" + file.name + "\"",
+							"contentDisposition": "attachment; filename=\"" + file.name + "\"",
+							"contentTransferEncoding": "base64",
+							"data": reader.result.match(/,(.*)$/)[1]
+						});
+						callback();
+					};
+					reader.readAsDataURL(file);
+				}else{
+					callback()
+				}
+			}catch(e){
+				callback();
+			}
+
 		},
 
 		getSortByFunction : function(orderBy, orderReversed) {
@@ -677,13 +711,13 @@ app.factory('xcUtils', function($rootScope, $http) {
 			}
 
 			return function(a,b) {
-				
+
 				var _a = (a[orderBy] || '');
 				var _b = (b[orderBy] || '');
 
 				if (typeof _a === 'string') { _a = _a.toLowerCase(); }
 				if (typeof _b === 'string') { _b = _b.toLowerCase(); }
-			
+
 				var modifier = (orderReversed ? -1 : 1);
 				if ( _a < _b )
 					return -1 * modifier;
@@ -722,7 +756,7 @@ app.factory('xcUtils', function($rootScope, $http) {
 			}
 
 		    //sort groups by group name
-	    	groups.sort( function(a,b) {	
+	    	groups.sort( function(a,b) {
 				var _n1 = (a['name'] || '');
 				var _n2 = (b['name'] || '');
 
@@ -751,14 +785,15 @@ app.factory('xcUtils', function($rootScope, $http) {
 				});
 
 				return o;
-				
+
 			});
 		}
-	
+
 
 	};
 
 });
+
 
 var app = angular.module('xcomponents');
 
@@ -1312,20 +1347,20 @@ app.directive('xcForm',
 
 			$scope.saveItem = function(targetItem) {
 
-				xcUtils.calculateFormFields(targetItem);
+				xcUtils.calculateFormFields(targetItem, function(){
+					$scope.selectedItem = targetItem;
 
-				$scope.selectedItem = targetItem;
+					xcDataFactory.getStore($scope.datastoreType)
+					.update( $scope.url, $scope.selectedItem)
+					.then( function(res) {
 
-				xcDataFactory.getStore($scope.datastoreType)
-				.update( $scope.url, $scope.selectedItem)
-				.then( function(res) {
+						$rootScope.$emit('refreshList', '');
+						$scope.isNew = false;
 
-					$rootScope.$emit('refreshList', '');
-					$scope.isNew = false;
-
-				})
-				.catch( function(err) {
-					alert("The item could not be saved/ updated: " + err.statusText);
+					})
+					.catch( function(err) {
+						alert("The item could not be saved/ updated: " + err.statusText);
+					});
 				});
 
 			};
@@ -1550,8 +1585,8 @@ app.directive('xcLayout', [ function() {
 
 var app = angular.module("xcomponents");
 
-app.directive('xcList', 
-	['$rootScope', '$filter', 'xcUtils', 'xcDataFactory', 
+app.directive('xcList',
+	['$rootScope', '$filter', 'xcUtils', 'xcDataFactory',
 	function($rootScope, $filter, xcUtils, xcDataFactory) {
 
 	var loadData = function(scope) {
@@ -1570,19 +1605,19 @@ app.directive('xcList',
 			scope.hasMore = false;
 			scope.items = scope.srcDataEntries;
 			scope.totalNumItems = scope.items.length;
-			
+
 		} else {
 
 			xcDataFactory.getStore(scope.datastoreType)
 			.all(scope.url).then( function(res) {
-				
+
 				var numRes = res.length;
 
 				//console.log('found ' + numRes + ' at ' + scope.url);
 
 				if (scope.filterBy && scope.filterValue) {
 					//filter the result set
-					
+
 					var filteredRes = [];
 
 					angular.forEach( res, function(entry, idx) {
@@ -1595,12 +1630,12 @@ app.directive('xcList',
 					res = filteredRes;
 
 				}
-				
+
 				if (scope.type == 'categorised' || scope.type=='accordion') {
 
 					scope.groups = xcUtils.getGroups( res, scope.groupBy, scope.orderBy, scope.orderReversed );
 					scope.isLoading = false;
-					
+
 					//auto load first entry in the first group
 					if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
 
@@ -1611,7 +1646,7 @@ app.directive('xcList',
 							}
 						}
 					}
-		
+
 				} else {			//flat or detailed
 
 					//sort the results
@@ -1642,7 +1677,7 @@ app.directive('xcList',
 			type : '@',				/*list type, options: flat (default), categorised, accordion*/
 			listWidth : '=' ,		/*width of the list (nr 1..11)*/
 			summaryField : '@',		/*name of the field used as a summary field*/
-			detailsField : '@',     
+			detailsField : '@',
 			detailsFieldType : '@',		/*text or date*/
 			detailsFieldSubTop : '@',
 			detailsFieldSubBottom : '@',
@@ -1650,15 +1685,15 @@ app.directive('xcList',
 			autoloadFirst : '=?',
 			allowAdd : '=',
 			groupBy : '@',			/*only relevant for categorised, accordion lists*/
-			filterBy : '@',	
-			filterSrc : '@',		
-			filterValue : '@',		
+			filterBy : '@',
+			filterSrc : '@',
+			filterValue : '@',
 			orderBy : '@',
 			orderReversed : '@',
 			url : '@',
 			srcData : '@',
 			imageField : '@',		/*image*/
-			iconField : '@',		/*icon*/ 
+			iconField : '@',		/*icon*/
 			imagePlaceholderIcon : '@',		/*icon to be used if no thumbnail could be found, see http://fortawesome.github.io/Font-Awesome/icons/ */
 			datastoreType : '@',
 			infiniteScroll : '@',
@@ -1668,7 +1703,7 @@ app.directive('xcList',
 		restrict : 'E',
 		transclude : true,
 		replace : true,
-		
+
 		templateUrl: function(elem,attrs) {
 			//calculate the template to use
 			return 'xc-list-' + attrs.type + '.html';
@@ -1678,12 +1713,12 @@ app.directive('xcList',
 
 			scope.colLeft = 'col-sm-' + attrs.listWidth;
 			scope.colRight = 'col-sm-' + (12 - parseInt(attrs.listWidth, 10) );
-			
+
 			loadData(scope);
 
 		},
 
-		controller: function($rootScope, $scope, $modal, $filter, xcUtils) {
+		controller: function($rootScope, $scope, $modal, $filter, xcUtils, $cookieStore) {
 
 			$scope.hideList = false;
 			$scope.orderReversed = $scope.$eval( $scope.orderReversed);		//for booleans
@@ -1709,13 +1744,14 @@ app.directive('xcList',
       		$scope.fieldsRead = xcUtils.getConfig('fieldsRead');
 			$scope.fieldsEdit = xcUtils.getConfig('fieldsEdit');
 			$scope.imageBase = xcUtils.getConfig('imageBase');
+			$scope.documentURL = xcUtils.getConfig('documentURL');
 
 			$scope.fieldFilters = xcUtils.getConfig('fieldFilters');
 
 			$rootScope.$on('refreshList', function(msg) {
 				loadData($scope);
 			});
-			
+
 			//custom list entries
 			if ($scope.srcData) {
 				$scope.srcDataEntries = xcUtils.getConfig( $scope.srcData);
@@ -1813,23 +1849,23 @@ app.directive('xcList',
 			};
 
 			$scope.select = function(item) {
-		
+
 				$scope.selected = item;
 				$scope.$emit('selectItemEvent', item);
 
 				//broadcast event to child scopes
 				$scope.$broadcast('itemSelected', item);
-				
+
 			};
 
-			
+
 			$rootScope.$on('selectItemEvent', function(ev, item) {
 
 				if ($scope.filterBy) {
 					$scope.filterValue = item[$scope.filterSrc];
 					loadData($scope);
 				}
-				
+
 			});
 
 			$scope.showImage = function(item) {
@@ -1861,38 +1897,38 @@ app.directive('xcList',
 
 		    $scope.saveNewItem = function(targetItem) {
 
-		    	xcUtils.calculateFormFields(targetItem);
+		    	xcUtils.calculateFormFields(targetItem, function(){
+						$scope.select(targetItem);
 
-		    	$scope.select(targetItem);
-				
-				xcDataFactory.getStore($scope.datastoreType)
-				.saveNew( $scope.url, targetItem )
-				.then( function(res) {
+						xcDataFactory.getStore($scope.datastoreType)
+						.saveNew( $scope.url, targetItem )
+						.then( function(res) {
 
-					if ($scope.type == 'categorised' || $scope.type=='accordion'){ 
+							if ($scope.type == 'categorised' || $scope.type=='accordion'){
 
-						//do a full refresh of the list
-						$rootScope.$emit('refreshList', '');
+								//do a full refresh of the list
+								$rootScope.$emit('refreshList', '');
 
-					} else {
+							} else {
 
-						//add the item to the list and sort it
-						var sortFunction = xcUtils.getSortByFunction( $scope.orderBy, $scope.orderReversed );
+								//add the item to the list and sort it
+								var sortFunction = xcUtils.getSortByFunction( $scope.orderBy, $scope.orderReversed );
 
-						$scope.items.push(res);
+								$scope.items.push(res);
 
-				        //resort
-				        var ress = $scope.items;
-				        ress.sort( sortFunction );
+										//resort
+										var ress = $scope.items;
+										ress.sort( sortFunction );
 
-				        $scope.items = ress;
+										$scope.items = ress;
 
-					}				
+							}
 
-				})
-				.catch( function(err) {
-					alert("The item could not be saved/ updated: " + err.statusText);
-				});
+						})
+						.catch( function(err) {
+							alert("The item could not be saved/ updated: " + err.statusText);
+						});
+					});
 
 			};
 
@@ -1907,7 +1943,7 @@ app.filter('searchFilter', function() {
    return function(items, word, numPerPage) {
 
     var filtered = [];
-  
+
     if (!word) {return items;}
 
     angular.forEach(items, function(item) {
