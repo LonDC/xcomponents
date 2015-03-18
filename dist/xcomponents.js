@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-18 3:07 */
+/* xcomponents 0.1.0 2015-03-18 3:12 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -1192,6 +1192,7 @@ app.directive('xcForm',
 			$scope.isNew = true;
 			$scope.host = xcUtils.getConfig('host');
 			$scope.db = xcUtils.getConfig('db');
+			$scope.apikey = $rootScope.apikey;
 
 			$rootScope.$on('selectItemEvent', function(ev, item) {
 				$scope.selectedItem = item;
