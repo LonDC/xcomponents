@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-18 4:32 */
+/* xcomponents 0.1.0 2015-03-18 4:38 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -2401,9 +2401,9 @@ angular.module("xc-form-modal-edit.html", []).run(["$templateCache", function($t
     "				<i class=\"fa fa-check\"></i>Save\n" +
     "			</button>\n" +
     "		</div>\n" +
-    "		<h4 class=\"modal-title\">Edit {{modelName}}</h4>		\n" +
+    "		<h4 class=\"modal-title\">Edit {{modelName}}</h4>\n" +
     "	</div>\n" +
-    "					\n" +
+    "\n" +
     "	<div class=\"modal-body form-horizontal\">\n" +
     "\n" +
     "		<div class=\"form-group\" ng-repeat=\"field in fieldsEdit\" ng-class=\"{ 'has-error': cardForm[field.field].$dirty && cardForm[field.field].$invalid }\">\n" +
@@ -2429,36 +2429,40 @@ angular.module("xc-form-modal-edit.html", []).run(["$templateCache", function($t
     "				<a class=\"fa fa-times-circle fa-lg clearer\" ng-hide=\"isEmpty(selectedItem[field.field])\"ng-click=\"clearField(field.field)\"></a>\n" +
     "			</div>\n" +
     "			<div class=\"col-md-9 needsclick\" ng-if=\"field.type=='html'\">\n" +
-    "				<div text-angular name=\"{{field.field}}\" \n" +
+    "				<div text-angular name=\"{{field.field}}\"\n" +
     "					class=\"needsclick\"\n" +
-    "					ta-toolbar=\"{{editorToolbarOptions}}\" \n" +
+    "					ta-toolbar=\"{{editorToolbarOptions}}\"\n" +
     "					ta-text-editor-class=\"border-around\"\n" +
     "					ta-html-editor-class=\"border-around\"\n" +
-    "					ng-model=\"selectedItem[field.field]\" \n" +
+    "					ng-model=\"selectedItem[field.field]\"\n" +
     "					ng-required=\"field.required\"></div>\n" +
     "			</div>\n" +
     "			<div class=\"col-xs-9\" ng-if=\"field.type=='select'\">\n" +
-    "				<select class=\"form-control\" \n" +
-    "					name=\"{{field.field}}\" \n" +
-    "					ng-model=\"selectedItem[field.field]\" \n" +
+    "				<select class=\"form-control\"\n" +
+    "					name=\"{{field.field}}\"\n" +
+    "					ng-model=\"selectedItem[field.field]\"\n" +
     "					ng-options=\"option.value as option.label for option in fieldOptions[field.field]\"\n" +
     "					ng-required=\"field.required\">\n" +
     "				</select>\n" +
     "			</div>\n" +
     "			<div class=\"col-xs-9\" ng-if=\"field.type=='select-multiple'\">\n" +
-    "				<select \n" +
-    "					class=\"form-control\" multiple \n" +
-    "					name=\"{{field.field}}\" \n" +
-    "					ng-model=\"selectedItem[field.field]\" \n" +
+    "				<select\n" +
+    "					class=\"form-control\" multiple\n" +
+    "					name=\"{{field.field}}\"\n" +
+    "					ng-model=\"selectedItem[field.field]\"\n" +
     "					ng-options=\"option.value as option.label for option in fieldOptions[field.field]\"\n" +
     "					ng-required=\"field.required\" >\n" +
     "				</select>\n" +
     "			</div>\n" +
-    "			<div class=\"col-xs-9\" ng-if=\"field.type=='toggle'\">	\n" +
+    "			<div class=\"col-xs-9\" ng-if=\"field.type=='toggle'\">\n" +
     "				<xc-toggle ng-model=\"selectedItem[field.field]\"></xc-toggle>\n" +
     "			</div>\n" +
-    "			\n" +
-    "		</div> \n" +
+    "			<div class=\"col-xs-9\" ng-if=\"field.type=='files'\">\n" +
+    "				<input type=\"file\" id=\"file\" name=\"file\" />\n" +
+    "			</div>\n" +
+    "\n" +
+    "\n" +
+    "		</div>\n" +
     "\n" +
     "	</div>\n" +
     "\n" +
@@ -2466,12 +2470,13 @@ angular.module("xc-form-modal-edit.html", []).run(["$templateCache", function($t
     "		<button type=\"button\" class=\"btn btn-danger btn-block\" ng-click=\"deleteItem()\">\n" +
     "			<i class=\"fa fa-trash-o\"></i>\n" +
     "			Delete {{modelName}}\n" +
-    "		</button>		\n" +
+    "		</button>\n" +
     "	</div>\n" +
     "\n" +
     "	</form>\n" +
     "\n" +
-    "</div>");
+    "</div>\n" +
+    "");
 }]);
 
 angular.module("xc-form.html", []).run(["$templateCache", function($templateCache) {
@@ -2532,6 +2537,14 @@ angular.module("xc-form.html", []).run(["$templateCache", function($templateCach
     "					<label>{{field.label}}</label>\n" +
     "					<h4 class=\"list-group-item-heading\" ng-bind-html=\"selectedItem[field.field]\"></h4>\n" +
     "				</div>\n" +
+    "				<div class=\"list-group-item\" ng-if=\"field.type=='notesname'\">\n" +
+    "		    	<label>{{field.label}}</label>\n" +
+    "		    	<h4 class=\"list-group-item-heading\" ng-bind-html=\"selectedItem[field.field] | notesname\"></h4>\n" +
+    "		    </div>\n" +
+    "		    <div class=\"list-group-item\" ng-if=\"field.type=='implodelist'\">\n" +
+    "		    	<label>{{field.label}}</label>\n" +
+    "		    	<h4 class=\"list-group-item-heading\" ng-bind-html=\"selectedItem[field.field] | implodelist\"></h4>\n" +
+    "		    </div>\n" +
     "				<div class=\"list-group-item\" ng-if=\"field.type=='html'\">\n" +
     "					<label>{{field.label}}</label>\n" +
     "					<h4 class=\"list-group-item-heading\" ng-bind-html=\"selectedItem[field.field]\"></h4>\n" +
@@ -3044,10 +3057,10 @@ angular.module("xc-list-heading.html", []).run(["$templateCache", function($temp
     "			<div class=\"col-xs-4\" ng-if=\"allowAdd\">\n" +
     "\n" +
     "				<a class=\"btn btn-primary btn-block\" href=\"#\" ng-click=\"addNewItem()\">\n" +
-    "					<i class=\"fa fa-plus\"></i> \n" +
+    "					<i class=\"fa fa-plus\"></i>\n" +
     "					<span>Add</span>\n" +
     "				</a>\n" +
-    "				\n" +
+    "\n" +
     "			</div>\n" +
     "\n" +
     "		</div>\n" +
@@ -3066,23 +3079,24 @@ angular.module("xc-list-heading.html", []).run(["$templateCache", function($temp
     "				      <i class=\"fa fa-search\"></i>\n" +
     "			      </div>\n" +
     "			    </div>\n" +
-    "				   \n" +
+    "\n" +
     "				<div class=\"col-xs-3\" ng-if=\"allowAdd && !title\">\n" +
     "\n" +
-    "					<a class=\"btn btn-primary btn-block\" href=\"#\" ng-click=\"addNewItem()\">\n" +
-    "						<i class=\"fa fa-plus\"></i> \n" +
+    "					<a class=\"btn btn-primary btn-block\" href=\"#/home\" ng-click=\"addNewItem()\">\n" +
+    "						<i class=\"fa fa-plus\"></i>\n" +
     "						<span>Add</span>\n" +
     "					</a>\n" +
-    "					\n" +
+    "\n" +
     "				</div>\n" +
     "\n" +
-    "			</div>						    \n" +
-    "		</div>				\n" +
+    "			</div>\n" +
+    "		</div>\n" +
     "\n" +
     "\n" +
-    "	</div>		\n" +
+    "	</div>\n" +
     "\n" +
-    "</div>");
+    "</div>\n" +
+    "");
 }]);
 
 angular.module("xc-reading.html", []).run(["$templateCache", function($templateCache) {
