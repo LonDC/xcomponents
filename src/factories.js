@@ -1,7 +1,6 @@
-
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
-app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory', 
+app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
 		function( RESTFactory, PouchFactory, LowlaFactory) {
 
 	return {
@@ -15,7 +14,7 @@ app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
 			case 'lowla':
 				return LowlaFactory;
 			default:
-				return RESTFactory; 
+				return RESTFactory;
 			}
 
 		}
@@ -37,38 +36,42 @@ app.factory('RESTFactory', ['$http', function($http) {
 
 		},
 
+		login : function(url, data, callback){
+      return $http.post(url, JSON.stringify(data)).success(callback);
+    },
+
 		insert : function(url, toInsert) {
 			console.error('not implemented');
 		},
 
-		all : function(url) { 
+		all : function(url) {
 
 			url = url.replace(":id", "");
 
 			console.log('querying REST service at ' + url);
 
 			return $http.get(url).then( function(res) {
-				console.log('returning '  + res.data.length + ' items');
-				return res.data;
+				console.log('returning '  + res.data.data.length + ' items');
+				return res.data.data;
 			});
 
 		},
 
 		saveNew : function(url, item) {
-			
+
 			url = url.replace(":id", "");
 
-			return $http.post(url, item).then( function(res) {
+			return $http.put(url, item).then( function(res) {
 				return res.data;
 			});
 
 		},
 
 		update : function(url, item) {
-		
+
 			url = url.replace(":id", "");
 
-			return $http.put(url, item).then( function(res) {
+			return $http.post(url, item).then( function(res) {
 				return res.data;
 			});
 
@@ -82,7 +85,7 @@ app.factory('RESTFactory', ['$http', function($http) {
 		deleteAll : function() {
 
 			console.error('not implemented');
-			
+
 		},
 
 		getById : function(url, id) {
@@ -132,8 +135,8 @@ app.factory('PouchFactory', ['pouchDB', function(pouchDB) {
 			return pouch.bulkDocs(toInsert);
 		},
 
-		all : function(dbName) { 
-			
+		all : function(dbName) {
+
 			var db = pouchDB(dbName);
 
 			console.log('querying Pouch database named ' + dbName);
@@ -142,13 +145,13 @@ app.factory('PouchFactory', ['pouchDB', function(pouchDB) {
 			.then( function(res) {
 
 				var queryResults = [];
-	                
+
 	            angular.forEach(res.rows, function(r) {
 	            	queryResults.push(r.doc);
 	            });
 
 	            console.log('returning ' + queryResults.length + ' results');
-	            
+
 				return queryResults;
 			})
 			.catch( function(err) {
@@ -204,7 +207,7 @@ app.factory('PouchFactory', ['pouchDB', function(pouchDB) {
 				console.error(err);
 				return null;
 			});
-			
+
 		},
 
 		delete : function(dbName, item) {
@@ -267,7 +270,7 @@ app.factory('LowlaFactory', [function() {
 			return items.insert(toInsert);
 		},
 
-		all : function(dbName) { 
+		all : function(dbName) {
 
 			var items = this.getDb().collection(dbName, collection);
 
@@ -291,16 +294,14 @@ app.factory('LowlaFactory', [function() {
 			delete item['$$hashKey'];
 
 			return items.insert(item);
-			
-			/*return db.post(item).then( function(res) {
 
+			/*return db.post(item).then( function(res) {
 				if (res.ok) {
 					item.id = res.id;
 					return item;
 				} else {
 					alert('Error while inserting in Pouch');
 				}
-
 			})*/
 		},
 
@@ -328,7 +329,7 @@ app.factory('LowlaFactory', [function() {
 					console.error('error while inserting', err);
 				}
 			);
-			
+
 		},
 
 		delete : function(dbName, item) {
@@ -357,7 +358,7 @@ app.factory('LowlaFactory', [function() {
 				return null;
 
 			});
-			
+
 		},
 
 		exists : function(dbName, id) {
