@@ -104,13 +104,7 @@ app.factory('xcUtils', function($rootScope, $http) {
 				var added = false;
 			   	for (var g in groups) {
 			     if (groups[g].name == entryGroup) {
-							if (Array.isArray(entry)){
-								for (var e in entry){
-									groups[g].entries.push(e);
-								}
-							}else{
-			        	groups[g].entries.push( entry);
-							}
+			        groups[g].entries.push( entry);
 			        added = true;
 			        break;
 			     }
