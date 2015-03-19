@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 1:44 */
+/* xcomponents 0.1.0 2015-03-19 2:01 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -3179,7 +3179,7 @@ angular.module("xc-list-response.html", []).run(["$templateCache", function($tem
     "			<div class=\"list-group\">\n" +
     "\n" +
     "        <div class=\"list-group-item\">\n" +
-    "					<h4 class=\"list-group-item-heading\">{{item[detailsField] | flt : fieldFilters[detailsField]}}</h4>\n" +
+    "					<h4 class=\"list-group-item-heading\" ng-bind-html=\"item[detailsField]\"></h4>\n" +
     "				</div>\n" +
     "\n" +
     "				<div class=\"list-group-item\" ng-show=\"isLoading\">\n" +
