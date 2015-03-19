@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 2:01 */
+/* xcomponents 0.1.0 2015-03-19 2:06 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -1692,6 +1692,7 @@ app.directive('xcList',
 			type : '@',				/*list type, options: flat (default), categorised, accordion*/
 			listWidth : '=' ,		/*width of the list (nr 1..11)*/
 			summaryField : '@',		/*name of the field used as a summary field*/
+			summaryFieldType : '@',
 			detailsField : '@',
 			detailsFieldType : '@',		/*text or date*/
 			detailsFieldSubTop : '@',
@@ -1745,6 +1746,7 @@ app.directive('xcList',
 			$scope.autoloadFirst = (typeof $scope.autoloadFirst == 'undefined' ? false : $scope.autoloadFirst);
 			$scope.infiniteScroll = (typeof $scope.infiniteScroll == 'undefined' ? false : $scope.infiniteScroll);
 			$scope.detailsFieldType = (typeof $scope.detailsFieldType == 'undefined' ? 'text' : $scope.detailsFieldType);
+			$scope.summaryFieldType = (typeof $scope.summaryFieldType == 'undefined' ? 'text' : $scope.summaryFieldType);
 
 			$scope.isLoading = true;
       		$scope.hasMore = false;
@@ -1756,7 +1758,7 @@ app.directive('xcList',
 			$scope.numPages = 1;
 
 			$scope.modelName = xcUtils.getConfig('modelName');
-      		$scope.fieldsRead = xcUtils.getConfig('fieldsRead');
+      $scope.fieldsRead = xcUtils.getConfig('fieldsRead');
 			$scope.fieldsEdit = xcUtils.getConfig('fieldsEdit');
 			$scope.imageBase = xcUtils.getConfig('imageBase');
 			$scope.documentURL = xcUtils.getConfig('documentURL');
@@ -3173,10 +3175,14 @@ angular.module("xc-list-response.html", []).run(["$templateCache", function($tem
     "		<div class=\"panel panel-default\">\n" +
     "\n" +
     "      <div class=\"panel-heading clearfix\">\n" +
-    "        <h3 class=\"panel-title pull-left\">{{item[summaryField] | fltr : fieldFilters[summaryField]}}</h3>\n" +
+    "        <h3 class=\"panel-title pull-left\">{{item[summaryField] | fltr : summaryField}}</h3>\n" +
     "      </div>\n" +
     "\n" +
     "			<div class=\"list-group\">\n" +
+    "\n" +
+    "        <div class=\"list-group-item\">\n" +
+    "					<h4 class=\"list-group-item-heading\">{{item.__created | date}}</h4>\n" +
+    "				</div>\n" +
     "\n" +
     "        <div class=\"list-group-item\">\n" +
     "					<h4 class=\"list-group-item-heading\" ng-bind-html=\"item[detailsField]\"></h4>\n" +
