@@ -2,17 +2,7 @@
 
  	<div class="panel panel-default" ng-show="!$root.hideList" ng-repeat="item in items | filter: filter | limitTo : itemsShown track by item.__unid">
 
-		<div class="panel panel-default">
-
-      <div class="panel-heading clearfix">
-        <h3 class="panel-title pull-left">{{item[summaryField] | fltr : summaryField}}</h3>
-      </div>
-
-			<div class="list-group">
-
-        <div class="list-group-item">
-					<h4 class="list-group-item-heading">{{item.__created | date}}</h4>
-				</div>
+     <xc-base footer-text="Created: {{item.__created | date}}" title="{{item[summaryField] | fltr : summaryFieldType}}">
 
         <div class="list-group-item">
 					<h4 class="list-group-item-heading" ng-bind-html="item[detailsField]"></h4>
@@ -32,9 +22,7 @@
 					</button>
 				</div>
 
-			</div>
-
-		</div>
+		</xc-base>
 
 	</div>
 

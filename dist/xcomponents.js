@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 2:06 */
+/* xcomponents 0.1.0 2015-03-19 2:18 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -3172,17 +3172,7 @@ angular.module("xc-list-response.html", []).run(["$templateCache", function($tem
     "\n" +
     " 	<div class=\"panel panel-default\" ng-show=\"!$root.hideList\" ng-repeat=\"item in items | filter: filter | limitTo : itemsShown track by item.__unid\">\n" +
     "\n" +
-    "		<div class=\"panel panel-default\">\n" +
-    "\n" +
-    "      <div class=\"panel-heading clearfix\">\n" +
-    "        <h3 class=\"panel-title pull-left\">{{item[summaryField] | fltr : summaryField}}</h3>\n" +
-    "      </div>\n" +
-    "\n" +
-    "			<div class=\"list-group\">\n" +
-    "\n" +
-    "        <div class=\"list-group-item\">\n" +
-    "					<h4 class=\"list-group-item-heading\">{{item.__created | date}}</h4>\n" +
-    "				</div>\n" +
+    "     <xc-base footer-text=\"Created: {{item.__created | date}}\" title=\"{{item[summaryField] | fltr : summaryFieldType}}\">\n" +
     "\n" +
     "        <div class=\"list-group-item\">\n" +
     "					<h4 class=\"list-group-item-heading\" ng-bind-html=\"item[detailsField]\"></h4>\n" +
@@ -3202,9 +3192,7 @@ angular.module("xc-list-response.html", []).run(["$templateCache", function($tem
     "					</button>\n" +
     "				</div>\n" +
     "\n" +
-    "			</div>\n" +
-    "\n" +
-    "		</div>\n" +
+    "		</xc-base>\n" +
     "\n" +
     "	</div>\n" +
     "\n" +
