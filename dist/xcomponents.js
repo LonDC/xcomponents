@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 1:14 */
+/* xcomponents 0.1.0 2015-03-19 1:44 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -2273,7 +2273,7 @@ app.directive('xcUpload', function() {
 	};
 
 });
-angular.module('templates-main', ['xc-base.html', 'xc-carousel.html', 'xc-chart.html', 'xc-file.html', 'xc-footer.html', 'xc-form-modal-edit.html', 'xc-form.html', 'xc-header.html', 'xc-image.html', 'xc-layout.html', 'xc-list-accordion.html', 'xc-list-categorised.html', 'xc-list-detailed.html', 'xc-list-flat.html', 'xc-list-heading.html', 'xc-reading.html', 'xc-summary-item.html', 'xc-summary.html', 'xc-upload.html']);
+angular.module('templates-main', ['xc-base.html', 'xc-carousel.html', 'xc-chart.html', 'xc-file.html', 'xc-footer.html', 'xc-form-modal-edit.html', 'xc-form.html', 'xc-header.html', 'xc-image.html', 'xc-layout.html', 'xc-list-accordion.html', 'xc-list-categorised.html', 'xc-list-detailed.html', 'xc-list-flat.html', 'xc-list-heading.html', 'xc-list-response.html', 'xc-reading.html', 'xc-summary-item.html', 'xc-summary.html', 'xc-upload.html']);
 
 angular.module("xc-base.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("xc-base.html",
@@ -3157,6 +3157,48 @@ angular.module("xc-list-heading.html", []).run(["$templateCache", function($temp
     "			</div>\n" +
     "		</div>\n" +
     "\n" +
+    "\n" +
+    "	</div>\n" +
+    "\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("xc-list-response.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("xc-list-response.html",
+    "<div>\n" +
+    "\n" +
+    " 	<div class=\"panel panel-default\" ng-show=\"!$root.hideList\" ng-repeat=\"item in items | filter: filter | limitTo : itemsShown track by item.__unid\">\n" +
+    "\n" +
+    "		<div class=\"panel panel-default\">\n" +
+    "\n" +
+    "      <div class=\"panel-heading clearfix\">\n" +
+    "        <h3 class=\"panel-title pull-left\">{{item[summaryField] | fltr : fieldFilters[summaryField]}}</h3>\n" +
+    "      </div>\n" +
+    "\n" +
+    "			<div class=\"list-group\">\n" +
+    "\n" +
+    "        <div class=\"list-group-item\">\n" +
+    "					<h4 class=\"list-group-item-heading\">{{item[detailsField] | flt : fieldFilters[detailsField]}}</h4>\n" +
+    "				</div>\n" +
+    "\n" +
+    "				<div class=\"list-group-item\" ng-show=\"isLoading\">\n" +
+    "					<i class=\"fa fa-spinner fa-spin fa-fw\" style=\"margin-right:0; opacity: 1;\"></i>Loading...\n" +
+    "				</div>\n" +
+    "\n" +
+    "				<div class=\"list-group-item\" ng-show=\"items.length == 0\">\n" +
+    "					No items found\n" +
+    "				</div>\n" +
+    "\n" +
+    "				<div class=\"list-group-item\" ng-show=\"!isLoading && hasMore\">\n" +
+    "					<button ng-click=\"loadMore()\" id=\"btnLoadMore\" class=\"btn btn-default\">\n" +
+    "						Load more...\n" +
+    "					</button>\n" +
+    "				</div>\n" +
+    "\n" +
+    "			</div>\n" +
+    "\n" +
+    "		</div>\n" +
     "\n" +
     "	</div>\n" +
     "\n" +
