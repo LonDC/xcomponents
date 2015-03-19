@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 2:21 */
+/* xcomponents 0.1.0 2015-03-19 2:22 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -2279,16 +2279,13 @@ angular.module('templates-main', ['xc-base.html', 'xc-carousel.html', 'xc-chart.
 
 angular.module("xc-base.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("xc-base.html",
-    "<div class=\"panel panel-default\"> \n" +
+    "<div class=\"panel panel-default\">\n" +
     "  <div class=\"panel-heading clearfix\">\n" +
     "    <h3 class=\"panel-title pull-left\">{{::title}}</h3>\n" +
-    "      <a class=\"btn btn-primary pull-right\" href=\"#\" onclick=\"alert('This button is disabled')\">\n" +
-    "        <i class=\"fa fa-pencil\"></i>Edit\n" +
-    "      </a>\n" +
-    "    </div>\n" +
-    "    <div class=\"list-group\">\n" +
-    "      <ng-transclude></ng-transclude>\n" +
-    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"list-group\">\n" +
+    "    <ng-transclude></ng-transclude>\n" +
+    "  </div>\n" +
     "  <div class=\"panel-footer\">\n" +
     "    <small class=\"pull-left\">{{footerText}}</small>\n" +
     "  </div>\n" +
