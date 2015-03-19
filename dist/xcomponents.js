@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 2:40 */
+/* xcomponents 0.1.0 2015-03-19 2:42 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -2510,14 +2510,6 @@ angular.module("xc-form-modal-edit.html", []).run(["$templateCache", function($t
     "				</select>\n" +
     "			</div>\n" +
     "			<div class=\"col-xs-9\" ng-if=\"field.type=='select-multiple'\">\n" +
-    "				<select\n" +
-    "					class=\"form-control\" multiple\n" +
-    "					name=\"{{field.field}}\"\n" +
-    "					ng-model=\"selectedItem[field.field]\"\n" +
-    "					ng-selected=\"{{selectedItem[field.field].indexOf(o) > -1}}\"\n" +
-    "					ng-options=\"option.value as option.label for option in fieldOptions[field.field]\"\n" +
-    "					ng-required=\"field.required\" >\n" +
-    "				</select>\n" +
     "				<select class=\"form-control\" multiple name=\"{{field.field}}\" ng-model=\"selectedItem[field.field]\" ng-required=\"field.required\" >\n" +
     "					<option ng-repeat=\"o in field.options\" ng-selected=\"{{selectedItem[field.field].indexOf(o) > -1}}\" value=\"{{o}}\">{{o}}</option>\n" +
     "				</select>\n" +
