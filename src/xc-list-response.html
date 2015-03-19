@@ -1,6 +1,6 @@
 <div>
 
- 	<div class="panel panel-default" ng-show="!$root.hideList" ng-repeat="item in items | filter: filter | limitTo : itemsShown track by item.__unid">
+ 	<div ng-show="!$root.hideList" ng-repeat="item in items | filter: filter | limitTo : itemsShown track by item.__unid">
 
      <xc-base footer-text="Created: {{item.__created | date}}" title="{{item[summaryField] | fltr : summaryFieldType}}">
 

@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 2:18 */
+/* xcomponents 0.1.0 2015-03-19 2:21 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -3170,7 +3170,7 @@ angular.module("xc-list-response.html", []).run(["$templateCache", function($tem
   $templateCache.put("xc-list-response.html",
     "<div>\n" +
     "\n" +
-    " 	<div class=\"panel panel-default\" ng-show=\"!$root.hideList\" ng-repeat=\"item in items | filter: filter | limitTo : itemsShown track by item.__unid\">\n" +
+    " 	<div ng-show=\"!$root.hideList\" ng-repeat=\"item in items | filter: filter | limitTo : itemsShown track by item.__unid\">\n" +
     "\n" +
     "     <xc-base footer-text=\"Created: {{item.__created | date}}\" title=\"{{item[summaryField] | fltr : summaryFieldType}}\">\n" +
     "\n" +
