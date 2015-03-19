@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-19 8:08 */
+/* xcomponents 0.1.0 2015-03-19 8:17 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -53,7 +53,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 
 			return $http.get(url).then( function(res) {
 				console.log('returning '  + res.data.data.length + ' items');
-				return res.data.data;
+				return res.data;
 			});
 
 		},
