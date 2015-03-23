@@ -27,7 +27,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 	return {
 
 		info : function(url) {
-
+			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", "") + 'count';
 
 			return $http.get(url).then( function(res) {
@@ -37,15 +37,17 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		login : function(url, data, callback){
+			url = url.replace(":db", xcomponents.db);
       return $http.post(url, JSON.stringify(data)).success(callback);
     },
 
 		insert : function(url, toInsert) {
+			url = url.replace(":db", xcomponents.db);
 			console.error('not implemented');
 		},
 
 		all : function(url) {
-
+			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", "");
 
 			console.log('querying REST service at ' + url);
@@ -58,7 +60,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		saveNew : function(url, item) {
-
+			url = url.replace(":db", xcomponents.db);
 			var date = new Date();
 			var time = date.getTime();
 			var url = url.replace(":id", time);
@@ -70,7 +72,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		update : function(url, item) {
-
+			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", item.__unid);
 
 			return $http.post(url, item).then( function(res) {
@@ -80,6 +82,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		delete : function(url, item) {
+			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", item.__unid);
 			return $http.delete(url);
 		},
@@ -91,7 +94,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		getById : function(url, id) {
-
+			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", id);
 
 			return $http.get(url).then( function(res) {
@@ -101,7 +104,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		exists : function(url, id) {
-
+			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", id) + '/exists';
 
 			return $http.get(url).then( function(res) {
