@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-23 1:59 */
+/* xcomponents 0.1.0 2015-03-23 2:23 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -1675,6 +1675,20 @@ app.directive('xcList',
 							}
 						}
 
+					} else if(scope.type == 'accordion-remote') {
+						scope.groups = xcUtils.getRemoteGroups( res.data, scope.groupBy, scope.orderBy, scope.orderReversed );
+						scope.isLoading = false;
+
+						//auto load first entry in the first group
+						if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
+
+							if (scope.groups.length>0) {
+								if (scope.groups[0].entries.length>0) {
+									scope.select( scope.groups[0].entries[0] ); 
+								}
+								scope.groups[0].collapsed = false;
+							}
+						}
 					} else {			//flat or detailed
 
 						//sort the results
@@ -2336,7 +2350,7 @@ app.directive('xcUpload', ['$http', 'xcDataFactory', function($http, xcDataFacto
 
 }]);
 
-angular.module('templates-main', ['xc-base.html', 'xc-carousel.html', 'xc-chart.html', 'xc-file.html', 'xc-footer.html', 'xc-form-modal-edit.html', 'xc-form.html', 'xc-header.html', 'xc-image.html', 'xc-layout.html', 'xc-list-accordion.html', 'xc-list-categorised.html', 'xc-list-detailed.html', 'xc-list-flat.html', 'xc-list-heading.html', 'xc-list-response.html', 'xc-reading.html', 'xc-summary-item.html', 'xc-summary.html', 'xc-upload.html']);
+angular.module('templates-main', ['xc-base.html', 'xc-carousel.html', 'xc-chart.html', 'xc-file.html', 'xc-footer.html', 'xc-form-modal-edit.html', 'xc-form.html', 'xc-header.html', 'xc-image.html', 'xc-layout.html', 'xc-list-accordion-remote.html', 'xc-list-accordion.html', 'xc-list-categorised.html', 'xc-list-detailed.html', 'xc-list-flat.html', 'xc-list-heading.html', 'xc-list-response.html', 'xc-reading.html', 'xc-summary-item.html', 'xc-summary.html', 'xc-upload.html']);
 
 angular.module("xc-base.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("xc-base.html",
@@ -2897,6 +2911,74 @@ angular.module("xc-layout.html", []).run(["$templateCache", function($templateCa
     "		<span ng-transclude></span>\n" +
     "	</div>\n" +
     "</div>\n" +
+    "");
+}]);
+
+angular.module("xc-list-accordion-remote.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("xc-list-accordion-remote.html",
+    "<span>\n" +
+    "\n" +
+    " 	<div class=\"bootcards-list\" ng-class=\"colClass()\" ng-show=\"!$root.hideList\">\n" +
+    "\n" +
+    "		<div class=\"panel panel-default\">\n" +
+    "\n" +
+    "			<ng-include src=\"'xc-list-heading.html'\"></ng-include>\n" +
+    "\n" +
+    "			<div class=\"list-group\">\n" +
+    "\n" +
+    "				<div ng-repeat=\"group in groups | filter : filter\" class=\"animate-repeat\">\n" +
+    "					<div class=\"list-group-item bootcards-list-subheading\" >\n" +
+    "						{{group.name}}\n" +
+    "					</div>\n" +
+    "\n" +
+    "					<a class=\"list-group-item\" ng-repeat=\"item in group.entries | filter : filter\" ng-click=\"select(item)\"\n" +
+    "						ng-class=\"{'active' : selectedItemId == item.__unid}\">\n" +
+    "\n" +
+    "						<!--(placeholder) icon-->\n" +
+    "						<i ng-if=\"showPlaceholder(item)\" class=\"fa fa-2x pull-left\" ng-class=\"'fa-' + imagePlaceholderIcon\"></i>\n" +
+    "						<i ng-if=\"showIcon(item)\" class=\"fa fa-2x pull-left\" ng-class=\"'fa-' + item[iconField]\"></i>\n" +
+    "\n" +
+    "						<!--image-->\n" +
+    "						<img\n" +
+    "						ng-show=\"showImage(item)\"\n" +
+    "						class=\"img-rounded pull-left\"\n" +
+    "						ng-src=\"{{ imageBase + item[imageField] }}\" />\n" +
+    "\n" +
+    "						<h4 class=\"list-group-item-heading\">{{item[summaryField] | fltr : fieldFilters[summaryField]}}&nbsp;</h4>\n" +
+    "\n" +
+    "						<p class=\"list-group-item-text\">{{ item[detailsField] | fltr : fieldFilters[detailsField] : detailsFieldType }}&nbsp;</p>\n" +
+    "\n" +
+    "					</a>\n" +
+    "\n" +
+    "				</div>\n" +
+    "\n" +
+    "				<div class=\"list-group-item\" ng-show=\"isLoading\">\n" +
+    "					<i class=\"fa fa-spinner fa-spin fa-fw\" style=\"margin-right:0; opacity: 1;\"></i>Loading...\n" +
+    "				</div>\n" +
+    "\n" +
+    "				<div class=\"list-group-item\" ng-show=\"groups.length == 0\">\n" +
+    "					No items found\n" +
+    "				</div>\n" +
+    "\n" +
+    "				<div class=\"list-group-item\" ng-show=\"!isLoading && hasMore\">\n" +
+    "					<button ng-click=\"loadMore()\" id=\"btnLoadMore\" class=\"btn btn-default\">\n" +
+    "						Load more...\n" +
+    "					</button>\n" +
+    "				</div>\n" +
+    "\n" +
+    "			</div>\n" +
+    "\n" +
+    "		</div>\n" +
+    "\n" +
+    "	</div>\n" +
+    "\n" +
+    "	<div class='bootcards-cards {{colRight}}' ng-show=\"$root.showCards\">\n" +
+    "\n" +
+    "    <span ng-transclude></span>\n" +
+    "\n" +
+    "	</div>\n" +
+    "\n" +
+    "</span>\n" +
     "");
 }]);
 
