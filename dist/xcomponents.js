@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-23 4:03 */
+/* xcomponents 0.1.0 2015-03-23 5:13 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -1935,18 +1935,50 @@ app.directive('xcList',
 					      "value": group.name
 					    }]
 					  };
+						group.isLoading = true;
 						xcDataFactory.getStore($scope.datastoreType)
 						.allfilter($scope.url, filter).then( function(res) {
 
 							group.collapsed = !expand.collapsed;
 							group.entries = res.data;
 
+							$scope.totalNumItems = res.count;
+							group.totalNumItems = res.count;
+							group.hasMore = group.entries.length < res.count;
+							$scope.hasMore = group.hasMore;
+							group.isLoading = false;
+							$scope.isLoading = false;
 						});
 					} else {
 						group.collapsed = true;
 						group.entries = [];
 					}
 				});
+			};
+
+			$scope.groupLoadMore = function(group) {
+				if (group.hasMore && !group.isLoading) {
+					//Now go and get the data for this category (at least the first page anyway)
+					var filter = {
+						"filters": [{
+							"operator": "contains",
+							"field": $scope.categoryfield,
+							"value": group.name
+						}]
+					};
+					group.isLoading = true;
+					xcDataFactory.getStore($scope.datastoreType)
+					.allfilter($scope.url + "&start=" + group.entries.length, filter).then( function(res) {
+
+						group.entries = group.entries.concat(res.data);
+
+						$scope.totalNumItems = res.count;
+						group.hasMore = group.entries.length < res.count;
+						$scope.hasMore = group.hasMore;
+						group.isLoading = false;
+						$scope.isLoading = false;
+					});
+				}
 			};
 
 			$scope.select = function(item) {
@@ -2055,7 +2087,7 @@ app.directive('xcList',
 					.saveNew( $scope.documentURL, targetItem )
 					.then( function(res) {
 
-						if ($scope.type == 'categorised' || $scope.type=='accordion' || $scope.type == 'flat'){
+						if ($scope.type == 'categorised' || $scope.type=='accordion' || $scope.type=='accordion-remote' || $scope.type == 'flat'){
 
 							//do a full refresh of the list
 							$rootScope.$emit('refreshList', '');
@@ -2979,20 +3011,19 @@ angular.module("xc-list-accordion-remote.html", []).run(["$templateCache", funct
     "\n" +
     "					</a>\n" +
     "\n" +
-    "				</div>\n" +
+    "          <div class=\"list-group-item\" ng-show=\"!group.collapsed && group.isLoading\">\n" +
+    "            <i class=\"fa fa-spinner fa-spin fa-fw\" style=\"margin-right:0; opacity: 1;\"></i>Loading...\n" +
+    "          </div>\n" +
+    "          <div class=\"list-group-item\" ng-show=\"!group.collapsed && !group.isLoading && group.hasMore\">\n" +
+    "            <button ng-click=\"groupLoadMore(group)\" id=\"btnLoadMore\" class=\"btn btn-default\">\n" +
+    "              Load more...\n" +
+    "            </button>\n" +
+    "          </div>\n" +
     "\n" +
-    "				<div class=\"list-group-item\" ng-show=\"isLoading\">\n" +
-    "					<i class=\"fa fa-spinner fa-spin fa-fw\" style=\"margin-right:0; opacity: 1;\"></i>Loading...\n" +
     "				</div>\n" +
     "\n" +
     "				<div class=\"list-group-item\" ng-show=\"groups.length == 0\">\n" +
     "					No items found\n" +
-    "				</div>\n" +
-    "\n" +
-    "				<div class=\"list-group-item\" ng-show=\"!isLoading && hasMore\">\n" +
-    "					<button ng-click=\"loadMore()\" id=\"btnLoadMore\" class=\"btn btn-default\">\n" +
-    "						Load more...\n" +
-    "					</button>\n" +
     "				</div>\n" +
     "\n" +
     "			</div>\n" +
