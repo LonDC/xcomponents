@@ -27,6 +27,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 	return {
 
 		info : function(url) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", "") + 'count';
 
@@ -37,16 +38,19 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		login : function(url, data, callback){
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
       return $http.post(url, JSON.stringify(data)).success(callback);
     },
 
 		insert : function(url, toInsert) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			console.error('not implemented');
 		},
 
 		all : function(url) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", "");
 
@@ -60,6 +64,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		saveNew : function(url, item) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			var date = new Date();
 			var time = date.getTime();
@@ -72,6 +77,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		update : function(url, item) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", item.__unid);
 
@@ -82,6 +88,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		delete : function(url, item) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", item.__unid);
 			return $http.delete(url);
@@ -94,6 +101,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		getById : function(url, id) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", id);
 
@@ -104,6 +112,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		},
 
 		exists : function(url, id) {
+			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
 			url = url.replace(":id", id) + '/exists';
 
