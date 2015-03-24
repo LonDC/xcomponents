@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-03-24 2:15 */
+/* xcomponents 0.1.0 2015-03-24 2:17 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
