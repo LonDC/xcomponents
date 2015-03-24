@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-24 10:07 */
+/* xcomponents 0.1.0 2015-03-24 1:35 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -1674,7 +1674,7 @@ app.directive('xcList',
 		} else {
 			var url = scope.url;
 			if (scope.embedded){
-				url = xcUtils.getConfig('responseURL');
+				url = scope.responseurl;
 				if (scope.selectedItemId != null){
 					url = url.replace(':id', scope.selectedItemId);
 				}
@@ -1791,6 +1791,8 @@ app.directive('xcList',
 			infiniteScroll : '@',
 			embedded : '@',
 			categoryurl: '@',
+			documenturl: '@',
+			responseurl: '@',
 			categoryfield: '@'
 		},
 
@@ -1858,8 +1860,6 @@ app.directive('xcList',
 			$scope.selected = null;
 			$scope.numPages = 1;
 
-			$scope.documentURL = xcUtils.getConfig('documentURL');
-
 			$rootScope.$on('refreshList', function(msg) {
 				loadData($scope);
 			});
@@ -1895,7 +1895,7 @@ app.directive('xcList',
 						},
 						model : function() {
 							return $scope.model;
-						}, 
+						},
 						isNew : function() {
 							return true;
 						},
@@ -2117,7 +2117,7 @@ app.directive('xcList',
 					$scope.select(targetItem);
 
 					xcDataFactory.getStore($scope.datastoreType)
-					.saveNew( $scope.documentURL, targetItem )
+					.saveNew( $scope.documenturl, targetItem )
 					.then( function(res) {
 
 						if ($scope.type == 'categorised' || $scope.type=='accordion' || $scope.type=='accordion-remote' || $scope.type == 'flat'){
