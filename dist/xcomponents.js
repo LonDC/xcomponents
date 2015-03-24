@@ -1,4 +1,4 @@
-/* xcomponents 0.1.0 2015-03-24 1:35 */
+/* xcomponents 0.1.0 2015-03-24 1:39 */
 var app = angular.module("xc.factories", ['ngResource', 'pouchdb']);
 
 app.factory('xcDataFactory', ['RESTFactory', 'PouchFactory', 'LowlaFactory',
@@ -1673,12 +1673,7 @@ app.directive('xcList',
 
 		} else {
 			var url = scope.url;
-			if (scope.embedded){
-				url = scope.responseurl;
-				if (scope.selectedItemId != null){
-					url = url.replace(':id', scope.selectedItemId);
-				}
-			}
+			url = url.replace(':id', scope.selectedItemId);
 			if(scope.type == 'accordion-remote'){
 				if (!scope.embedded || (scope.embedded && scope.selectedItemId != null)){
 					xcDataFactory.getStore(scope.datastoreType)
