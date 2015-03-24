@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-03-24 2:00 */
+/* xcomponents 0.1.0 2015-03-24 2:15 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -233,61 +233,60 @@ app.controller( "BaseController", [
 
 	$scope.saveNewItem = function(targetItem) {
 
-    	xcUtils.calculateFormFields(targetItem, $scope.model);
+  	xcUtils.calculateFormFields(targetItem, $scope.model, function(){
+			$scope.select(targetItem);
 
-    	$scope.select(targetItem);
+			xcDataFactory.getStore($scope.datastoreType)
+			.saveNew( $scope.url, targetItem )
+			.then( function(res) {
 
-		xcDataFactory.getStore($scope.datastoreType)
-		.saveNew( $scope.url, targetItem )
-		.then( function(res) {
+				if ($scope.type == 'categorised' || $scope.type=='accordion' || $scope.type == 'accordion-remote'){
 
-			if ($scope.type == 'categorised' || $scope.type=='accordion'){
+					//do a full refresh of the list
+					$rootScope.$emit('refreshList', '');
 
-				//do a full refresh of the list
-				$rootScope.$emit('refreshList', '');
+				} else {
 
-			} else {
+					//add the item to the list and sort it
+					var sortFunction = xcUtils.getSortByFunction( $scope.orderBy, $scope.orderReversed );
 
-				//add the item to the list and sort it
-				var sortFunction = xcUtils.getSortByFunction( $scope.orderBy, $scope.orderReversed );
+					$scope.items.push(res);
 
-				$scope.items.push(res);
+			        //resort
+			        var ress = $scope.items;
+			        ress.sort( sortFunction );
 
-		        //resort
-		        var ress = $scope.items;
-		        ress.sort( sortFunction );
+			        $scope.items = ress;
 
-		        $scope.items = ress;
+				}
 
-			}
-
-		})
-		.catch( function(err) {
-			alert("The item could not be saved/ updated: " + err.statusText);
+			})
+			.catch( function(err) {
+				alert("The item could not be saved/ updated: " + err.statusText);
+			});
 		});
-
 	};
 
 	$scope.saveItem = function(targetItem) {
 
-		xcUtils.calculateFormFields(targetItem, $scope.model);
+		xcUtils.calculateFormFields(targetItem, $scope.model, function(){
 
-		$scope.selectedItem = targetItem;
+			$scope.selectedItem = targetItem;
 
-		xcDataFactory.getStore($scope.datastoreType)
-		.update( $scope.url, $scope.selectedItem)
-		.then( function(res) {
+			xcDataFactory.getStore($scope.datastoreType)
+			.update( $scope.url, $scope.selectedItem)
+			.then( function(res) {
 
-			$rootScope.$emit('refreshList', '');
-			$scope.isNew = false;
+				$rootScope.$emit('refreshList', '');
+				$scope.isNew = false;
 
-		})
-		.catch( function(err) {
-			alert("The item could not be saved/ updated: " + err.statusText);
+			})
+			.catch( function(err) {
+				alert("The item could not be saved/ updated: " + err.statusText);
+			});
+
 		});
-
 	};
-
 	$scope.deleteItem = function(targetItem) {
 
 		xcDataFactory.getStore($scope.datastoreType)
