@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-03-25 9:07 */
+/* xcomponents 0.1.0 2015-03-25 10:04 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1616,9 +1616,9 @@ app.directive('xcHeader', function() {
 
 			$scope.logout = function(){
         $cookieStore.remove('apikey');
-				$cookieStore.remove('user');
+				$cookieStore.remove('username');
         $rootScope.apikey = null;
-				$rootScope.user = null;
+				$rootScope.username = null;
         window.location.reload();
       };
 
