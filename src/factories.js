@@ -40,13 +40,13 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 		login : function(url, data, callback){
 			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
-      return $http.get(url).success(callback);
+      return $http.post(url, JSON.stringify(data)).success(callback);
     },
 
 		databasedetails : function(url, callback) {
 			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
-      return $http.post(url, JSON.stringify(data)).success(callback);
+      return $http.get(url).success(callback);
 		},
 
 		insert : function(url, toInsert) {
