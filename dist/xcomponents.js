@@ -43,6 +43,16 @@ app.controller('xcController', function($rootScope, $scope, $timeout, $document,
 	if ($rootScope.apikey == null) {
 		console.log('We need to log in');
 		$location.path("/login");
+	}else{
+		//Get the database title
+		RESTFactory.databasedetails(':host/database/:db')
+		.success(function(response) {
+			console.log(response);
+			angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
+		})
+		.error(function(error) {
+			//Do nothing
+		});
 	}
 
 	$scope.menuOptions = [];
@@ -191,7 +201,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-03-25 10:36 */
+/* xcomponents 0.1.0 2015-04-07 4:46 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -383,6 +393,12 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
       return $http.post(url, JSON.stringify(data)).success(callback);
     },
 
+		databasedetails : function(url, callback) {
+			url = url.replace(":host", xcomponents.host);
+			url = url.replace(":db", xcomponents.db);
+      return $http.post(url, JSON.stringify(data)).success(callback);
+		}, 
+
 		insert : function(url, toInsert) {
 			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
@@ -402,7 +418,7 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 			});
 
 		},
-		
+
 		allfilter : function(url, filter) {
 			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
