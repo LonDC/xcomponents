@@ -2,7 +2,6 @@
 var app = angular.module('xcomponents');
 
 app.directive('xcHeader',
-		['xcDataFactory'],
 		function(xcDataFactory) {
 
 	return {
@@ -41,7 +40,7 @@ app.directive('xcHeader',
 			}
 
 			//Get the database title
-			var f = xcDataFactory.getStore($attrs.datastoreType);
+			var f = xcDataFactory.getStore();
 			f.databasedetails(':host/database/:db')
 			.success(function(response) {
 				console.log(response);

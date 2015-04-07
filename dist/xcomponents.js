@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-07 5:26 */
+/* xcomponents 0.1.0 2015-04-07 5:31 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1566,7 +1566,6 @@ app.directive('animateOnChange', function($animate) {
 var app = angular.module('xcomponents');
 
 app.directive('xcHeader',
-		['xcDataFactory'],
 		function(xcDataFactory) {
 
 	return {
@@ -1605,7 +1604,7 @@ app.directive('xcHeader',
 			}
 
 			//Get the database title
-			var f = xcDataFactory.getStore($attrs.datastoreType);
+			var f = xcDataFactory.getStore();
 			f.databasedetails(':host/database/:db')
 			.success(function(response) {
 				console.log(response);
