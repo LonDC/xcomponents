@@ -43,6 +43,16 @@ app.controller('xcController', function($rootScope, $scope, $timeout, $document,
 	if ($rootScope.apikey == null) {
 		console.log('We need to log in');
 		$location.path("/login");
+	}else{
+		//Get the database title
+		RESTFactory.databasedetails(':host/database/:db')
+		.success(function(response) {
+			console.log(response);
+			angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
+		})
+		.error(function(error) {
+			//Do nothing
+		});
 	}
 
 	$scope.menuOptions = [];
