@@ -15,7 +15,8 @@ var app = angular.module('xcomponents', [
 	'ngSanitize',
 	'textAngular',
 	'ui.bootstrap',
-	'ldcvia.login'
+	'ldcvia.login',
+	'RESTFactory'
 ]);
 
 //bootstrapping code
@@ -35,7 +36,7 @@ if (hasNativeHTMLImportsSupport) {
 	});
 }
 
-app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location) {
+app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location, RESTFactory) {
 	if ($cookieStore.get('apikey')){
 		$rootScope.apikey = $cookieStore.get('apikey');
 		$rootScope.username = $cookieStore.get('username');

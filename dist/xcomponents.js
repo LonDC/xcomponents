@@ -15,7 +15,8 @@ var app = angular.module('xcomponents', [
 	'ngSanitize',
 	'textAngular',
 	'ui.bootstrap',
-	'ldcvia.login'
+	'ldcvia.login',
+	'RESTFactory'
 ]);
 
 //bootstrapping code
@@ -35,7 +36,7 @@ if (hasNativeHTMLImportsSupport) {
 	});
 }
 
-app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location) {
+app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location, RESTFactory) {
 	if ($cookieStore.get('apikey')){
 		$rootScope.apikey = $cookieStore.get('apikey');
 		$rootScope.username = $cookieStore.get('username');
@@ -201,7 +202,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-07 4:46 */
+/* xcomponents 0.1.0 2015-04-07 4:50 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
