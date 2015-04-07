@@ -15,8 +15,7 @@ var app = angular.module('xcomponents', [
 	'ngSanitize',
 	'textAngular',
 	'ui.bootstrap',
-	'ldcvia.login',
-	'RESTFactory'
+	'ldcvia.login'
 ]);
 
 //bootstrapping code
@@ -36,7 +35,7 @@ if (hasNativeHTMLImportsSupport) {
 	});
 }
 
-app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location, RESTFactory) {
+app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location) {
 	if ($cookieStore.get('apikey')){
 		$rootScope.apikey = $cookieStore.get('apikey');
 		$rootScope.username = $cookieStore.get('username');
@@ -44,16 +43,6 @@ app.controller('xcController', function($rootScope, $scope, $timeout, $document,
 	if ($rootScope.apikey == null) {
 		console.log('We need to log in');
 		$location.path("/login");
-	}else{
-		//Get the database title
-		RESTFactory.databasedetails(':host/database/:db')
-		.success(function(response) {
-			console.log(response);
-			angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
-		})
-		.error(function(error) {
-			//Do nothing
-		});
 	}
 
 	$scope.menuOptions = [];

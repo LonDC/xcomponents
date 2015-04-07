@@ -15,8 +15,7 @@ var app = angular.module('xcomponents', [
 	'ngSanitize',
 	'textAngular',
 	'ui.bootstrap',
-	'ldcvia.login',
-	'RESTFactory'
+	'ldcvia.login'
 ]);
 
 //bootstrapping code
@@ -36,7 +35,7 @@ if (hasNativeHTMLImportsSupport) {
 	});
 }
 
-app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location, RESTFactory) {
+app.controller('xcController', function($rootScope, $scope, $timeout, $document, xcUtils, $cookieStore, $location) {
 	if ($cookieStore.get('apikey')){
 		$rootScope.apikey = $cookieStore.get('apikey');
 		$rootScope.username = $cookieStore.get('username');
@@ -44,16 +43,6 @@ app.controller('xcController', function($rootScope, $scope, $timeout, $document,
 	if ($rootScope.apikey == null) {
 		console.log('We need to log in');
 		$location.path("/login");
-	}else{
-		//Get the database title
-		RESTFactory.databasedetails(':host/database/:db')
-		.success(function(response) {
-			console.log(response);
-			angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
-		})
-		.error(function(error) {
-			//Do nothing
-		});
 	}
 
 	$scope.menuOptions = [];
@@ -202,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-07 4:50 */
+/* xcomponents 0.1.0 2015-04-07 5:08 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1576,7 +1565,9 @@ app.directive('animateOnChange', function($animate) {
 
 var app = angular.module('xcomponents');
 
-app.directive('xcHeader', function() {
+app.directive('xcHeader',
+		['xcDataFactory'],
+		function(xcDataFactory) {
 
 	return {
 
@@ -1589,7 +1580,7 @@ app.directive('xcHeader', function() {
 		templateUrl : 'xc-header.html',
 		transclude : true,
 
-		controller : function($rootScope, $scope, $document, xcUtils, $timeout, $cookieStore) {
+		controller : function($rootScope, $scope, $document, xcUtils, $timeout, $cookieStore, xcDataFactory) {
 
 			$scope.showBackButton = false;
 
@@ -1613,7 +1604,16 @@ app.directive('xcHeader', function() {
 				angular.element($document[0].body).addClass('has-bootcards-navbar-double');
 			}
 
-
+			//Get the database title
+			var f = xcDataFactory.getStore($attrs.datastoreType);
+			f.databasedetails(':host/database/:db')
+			.success(function(response) {
+				console.log(response);
+				angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
+			})
+			.error(function(error) {
+				//Do nothing
+			});
 
 			$scope.appVersion = xcUtils.getConfig('appVersion');
 
