@@ -140,7 +140,7 @@ app.directive('xcList',
 			documenturl: '@',
 			responseurl: '@',
 			categoryfield: '@',
-			categoryfieldtype: '@'
+			categoryFieldType: '@'
 		},
 
 		restrict : 'E',

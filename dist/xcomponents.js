@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-08 12:33 */
+/* xcomponents 0.1.0 2015-04-08 12:45 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1893,7 +1893,7 @@ app.directive('xcList',
 			documenturl: '@',
 			responseurl: '@',
 			categoryfield: '@',
-			categoryfieldtype: '@'
+			categoryFieldType: '@'
 		},
 
 		restrict : 'E',
