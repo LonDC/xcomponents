@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-08 11:02 */
+/* xcomponents 0.1.0 2015-04-08 12:05 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -3120,7 +3120,7 @@ angular.module("xc-list-accordion-remote.html", []).run(["$templateCache", funct
     "\n" +
     "				<div ng-repeat=\"group in groups\" class=\"animate-repeat\">\n" +
     "          <a ng-class=\"{'collapsed' : group.collapsed}\" class=\"list-group-item bootcards-list-subheading\" ng-click=\"toggleCategoryRemote(group)\">\n" +
-    "						{{group.name}}\n" +
+    "						{{group.name | fltr : fieldFilters[categoryfield]}}\n" +
     "					</a>\n" +
     "\n" +
     "          <a class=\"list-group-item\" ng-show=\"!group.collapsed\" ng-repeat=\"item in group.entries | filter : filter\"  ng-click=\"itemClick(item)\" ng-class=\"{'active' : selectedItemId == item.__unid}\">\n" +
