@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-08 12:05 */
+/* xcomponents 0.1.0 2015-04-08 12:33 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1892,7 +1892,8 @@ app.directive('xcList',
 			categoryurl: '@',
 			documenturl: '@',
 			responseurl: '@',
-			categoryfield: '@'
+			categoryfield: '@',
+			categoryfieldtype: '@'
 		},
 
 		restrict : 'E',
@@ -1958,6 +1959,7 @@ app.directive('xcList',
 			$scope.summaryFieldType = (typeof $scope.summaryFieldType == 'undefined' ? 'text' : $scope.summaryFieldType);
 			$scope.detailsFieldSubTopType = (typeof $scope.detailsFieldSubTopType == 'undefined' ? 'text' : $scope.detailsFieldSubTopType);
 			$scope.detailsFieldSubBottomType = (typeof $scope.detailsFieldSubBottomType == 'undefined' ? 'text' : $scope.detailsFieldSubBottomType);
+			$scope.categoryFieldType = (typeof $scope.categoryFieldType == 'undefined' ? 'text' : $scope.categoryFieldType);
 
 			$scope.isLoading = true;
       		$scope.hasMore = false;
@@ -3120,7 +3122,7 @@ angular.module("xc-list-accordion-remote.html", []).run(["$templateCache", funct
     "\n" +
     "				<div ng-repeat=\"group in groups\" class=\"animate-repeat\">\n" +
     "          <a ng-class=\"{'collapsed' : group.collapsed}\" class=\"list-group-item bootcards-list-subheading\" ng-click=\"toggleCategoryRemote(group)\">\n" +
-    "						{{group.name | fltr : fieldFilters[categoryfield]}}\n" +
+    "						{{group.name | fltr : categoryFieldType}}\n" +
     "					</a>\n" +
     "\n" +
     "          <a class=\"list-group-item\" ng-show=\"!group.collapsed\" ng-repeat=\"item in group.entries | filter : filter\"  ng-click=\"itemClick(item)\" ng-class=\"{'active' : selectedItemId == item.__unid}\">\n" +
