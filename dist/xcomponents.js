@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-07 5:32 */
+/* xcomponents 0.1.0 2015-04-08 11:02 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -383,10 +383,12 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
       return $http.post(url, JSON.stringify(data)).success(callback);
     },
 
-		databasedetails : function(url, callback) {
+		databasedetails : function(url) {
 			url = url.replace(":host", xcomponents.host);
 			url = url.replace(":db", xcomponents.db);
-      return $http.get(url).success(callback);
+			return $http.get(url).then( function(res) {
+				return res;
+			});
 		},
 
 		insert : function(url, toInsert) {
@@ -1606,12 +1608,8 @@ app.directive('xcHeader',
 			//Get the database title
 			var f = xcDataFactory.getStore();
 			f.databasedetails(':host/database/:db')
-			.success(function(response) {
-				console.log(response);
+			.then(function(response) {
 				angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
-			})
-			.error(function(error) {
-				//Do nothing
 			});
 
 			$scope.appVersion = xcUtils.getConfig('appVersion');
