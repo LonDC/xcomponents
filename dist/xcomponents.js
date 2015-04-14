@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-13 5:14 */
+/* xcomponents 0.1.0 2015-04-14 4:50 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1414,7 +1414,8 @@ app.directive('xcForm',
 			iconField : '@',				/*icon*/
 			imagePlaceholderIcon : '@',		/*icon to be used if no thumbnail could be found, see http://fortawesome.github.io/Font-Awesome/icons/ */
 			allowDelete : '=?',
-			datastoreType : '@'
+			datastoreType : '@',
+			allowEdit : true
 
 		},
 
@@ -1459,6 +1460,10 @@ app.directive('xcForm',
 			$scope.host = xcUtils.getConfig('host');
 			$scope.db = xcUtils.getConfig('db');
 			$scope.apikey = $rootScope.apikey;
+			if (xcomponents.readonly){
+				$scope.allowDelete = false;
+				$scope.allowEdit = false;
+			}
 
 			$rootScope.$on('selectItemEvent', function(ev, item) {
 				var f = xcDataFactory.getStore($attrs.datastoreType);
@@ -1640,10 +1645,11 @@ app.directive('xcHeader',
 			f.databasedetails(':host/database/:db')
 			.then(function(response) {
 				if (response.status && response.status != 200){
-					//We need to logg the user out
+					//We need to log the user out
 					$scope.logout();
 				}else{
 					angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
+					xcomponents.readonly = response.readonly;
 				}
 			});
 
@@ -1969,7 +1975,7 @@ app.directive('xcList',
 			$scope.categoryFieldType = (typeof $scope.categoryFieldType == 'undefined' ? 'text' : $scope.categoryFieldType);
 
 			$scope.isLoading = true;
-      		$scope.hasMore = false;
+      $scope.hasMore = false;
 
 			$scope.itemsPerPage = 20;
 			$scope.itemsShown = $scope.itemsPerPage;
@@ -1980,6 +1986,9 @@ app.directive('xcList',
 			$scope.host = xcUtils.getConfig('host');
 			$scope.db = xcUtils.getConfig('db');
 			$scope.apikey = $rootScope.apikey;
+			if (xcomponents.readonly){
+				$scope.allowAdd = false;
+			}
 
 			$rootScope.$on('refreshList', function(msg) {
 				loadData($scope);
@@ -2840,7 +2849,7 @@ angular.module("xc-form.html", []).run(["$templateCache", function($templateCach
     "\n" +
     "		<div class=\"panel-heading clearfix\">\n" +
     "			<h3 class=\"panel-title pull-left\">{{model.name}}</h3>\n" +
-    "			<a class=\"btn btn-primary pull-right\" ng-click=\"editDetails(selectedItem)\">\n" +
+    "			<a class=\"btn btn-primary pull-right\" ng-click=\"editDetails(selectedItem)\" ng-if=\"allowEdit\">\n" +
     "				<i class=\"fa fa-pencil\"></i><span>Edit</span>\n" +
     "			</a>\n" +
     "\n" +
