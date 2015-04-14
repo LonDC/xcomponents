@@ -61,13 +61,13 @@ app.controller('xcController', function($rootScope, $scope, $timeout, $document,
 	var body = angular.element( $document[0].body);
 
 	if ($scope.iOS) {
-		css += 'bootcards-ios-lite.min.css';
+		css += 'bootcards-ios.min.css';
 		body.addClass('bootcards-ios');
 	} else if ($scope.Android) {
-		css += 'bootcards-android-lite.min.css';
+		css += 'bootcards-android.min.css';
 		body.addClass('bootcards-android');
 	} else {
-		css += 'bootcards-desktop-lite.min.css';
+		css += 'bootcards-desktop.min.css';
 		body.addClass('bootcards-desktop');
 	}
 
@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-14 4:50 */
+/* xcomponents 0.1.0 2015-04-14 4:55 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
