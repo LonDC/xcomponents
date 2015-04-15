@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-15 1:57 */
+/* xcomponents 0.1.0 2015-04-15 3:12 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1649,7 +1649,7 @@ app.directive('xcHeader',
 					$scope.logout();
 				}else{
 					angular.element(document.getElementsByClassName("navbar-brand")).text(response.title);
-					xcomponents.readonly = response.readonly;
+					xcomponents.readonly = response.data.readonly;
 				}
 			});
 
