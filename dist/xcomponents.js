@@ -191,7 +191,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-14 4:55 */
+/* xcomponents 0.1.0 2015-04-15 1:57 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -1415,7 +1415,7 @@ app.directive('xcForm',
 			imagePlaceholderIcon : '@',		/*icon to be used if no thumbnail could be found, see http://fortawesome.github.io/Font-Awesome/icons/ */
 			allowDelete : '=?',
 			datastoreType : '@',
-			allowEdit : true
+			allowEdit : '@'
 
 		},
 
