@@ -81,8 +81,12 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 			console.log('querying REST service at ' + url);
 
 			return $http.post(url, filter).then( function(res) {
-				console.log('returning '  + res.data.data.length + ' items');
-				return res.data;
+				if (res.data.$err){
+					alert(res.data.$err);
+				}else{
+					console.log('returning '  + res.data.data.length + ' items');
+					return res.data;
+				}
 			});
 
 		},

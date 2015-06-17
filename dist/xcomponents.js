@@ -190,7 +190,7 @@ app.filter('fltr', function($interpolate, $filter, xcUtils) {
 	};
 });
 
-/* xcomponents 0.1.0 2015-04-16 2:11 */
+/* xcomponents 0.1.0 2015-06-17 10:30 */
 var app = angular.module("xcomponents");
 
 app.controller( "BaseController", [
@@ -420,8 +420,12 @@ app.factory('RESTFactory', ['$http', '$rootScope', '$cookieStore', function($htt
 			console.log('querying REST service at ' + url);
 
 			return $http.post(url, filter).then( function(res) {
-				console.log('returning '  + res.data.data.length + ' items');
-				return res.data;
+				if (res.data.$err){
+					alert(res.data.$err);
+				}else{
+					console.log('returning '  + res.data.data.length + ' items');
+					return res.data;
+				}
 			});
 
 		},
@@ -1776,107 +1780,169 @@ app.directive('xcLayout', [ function() {
 
 var app = angular.module("xcomponents");
 
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
+
 app.directive('xcList',
 	['$rootScope', '$controller', '$filter', 'xcUtils', 'xcDataFactory',
 	function($rootScope, $controller, $filter, xcUtils, xcDataFactory) {
 
-	var loadData = function(scope) {
+		var loadData = function(scope) {
 
-		//abort if the data needs to be filtered, but there's not filter value
-		if (scope.filterBy && (typeof scope.filterValue == 'undefined' ||
-			scope.filterValue == null || scope.filterValue.length==0) ) {
-			return;
-		}
-
-		//console.info("LOAD FROM " + scope.url, scope.filterBy, scope.filterValue);
-
-		if ( scope.srcDataEntries) {
-
-			scope.isLoading = false;
-			scope.hasMore = false;
-			scope.items = scope.srcDataEntries;
-			scope.totalNumItems = scope.srcDataEntries.length;
-
-		} else {
-			var url = scope.url;
-			url = url.replace(':id', scope.selectedItemId);
-			if(scope.type == 'accordion-remote'){
-				if (!scope.embedded || (scope.embedded && scope.selectedItemId != null)){
-					xcDataFactory.getStore(scope.datastoreType)
-					.list(scope.categoryurl).then( function(res) {
-						scope.groups = [];
-						res = res.sort(function (a, b) {
-				    	return a.toLowerCase().localeCompare(b.toLowerCase());
-						});
-						for (var g in res){
-							scope.groups.push({"name": res[g], "entries": [], "collapsed": true});
-						}
-
-						scope.isLoading = false;
-					});
-				}
-			}else{
-				if (!scope.embedded || (scope.embedded && scope.selectedItemId != null)){
-					xcDataFactory.getStore(scope.datastoreType)
-					.all(url).then( function(res) {
-
-						var numRes = res.data.length;
-
-						if (scope.filterBy && scope.filterValue) {
-							//filter the result set
-
-							var filteredRes = [];
-
-							angular.forEach( res.data, function(entry, idx) {
-
-								if (entry[scope.filterBy] == scope.filterValue) {
-									filteredRes.push( entry);
-								}
-							});
-
-							res.data = filteredRes;
-
-						}
-
-						if (scope.type == 'categorised' || scope.type=='accordion') {
-
-							scope.groups = xcUtils.getGroups( res.data, scope.groupBy, scope.orderBy, scope.orderReversed );
-							scope.isLoading = false;
-
-							//auto load first entry in the first group
-							if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
-
-								if (scope.groups.length>0) {
-									if (scope.groups[0].entries.length>0) { scope.select( scope.groups[0].entries[0] ); }
-									if (scope.type == 'accordion') {		//auto expand first group
-										scope.groups[0].collapsed = false;
-									}
-								}
-							}
-
-						} else {			//flat or detailed
-
-							//sort the results
-							res.data.sort( xcUtils.getSortByFunction( scope.orderBy, scope.orderReversed ) );
-
-				      scope.items = res.data;
-							scope.isLoading = false;
-							scope.totalNumItems = res.count;
-							scope.hasMore = scope.itemsShown < scope.totalNumItems;
-
-							//auto load first entry in the list
-							if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
-								scope.select( res.data[0] );
-							}
-
-						}
-
-					});
-				}
+			//abort if the data needs to be filtered, but there's not filter value
+			if (scope.filterBy && (typeof scope.filterValue == 'undefined' ||
+				scope.filterValue == null || scope.filterValue.length==0) ) {
+				return;
 			}
 
-		}
-	};
+			//console.info("LOAD FROM " + scope.url, scope.filterBy, scope.filterValue);
+
+			if ( scope.srcDataEntries) {
+
+				scope.isLoading = false;
+				scope.hasMore = false;
+				scope.items = scope.srcDataEntries;
+				scope.totalNumItems = scope.srcDataEntries.length;
+
+			} else {
+				var url = scope.url;
+				url = url.replace(':id', scope.selectedItemId);
+				if(scope.type == 'accordion-remote'){
+					if (!scope.embedded || (scope.embedded && scope.selectedItemId != null)){
+						xcDataFactory.getStore(scope.datastoreType)
+						.list(scope.categoryurl).then( function(res) {
+							scope.groups = [];
+							res = res.sort(function (a, b) {
+					    	return a.toLowerCase().localeCompare(b.toLowerCase());
+							});
+							for (var g in res){
+								scope.groups.push({"name": res[g], "entries": [], "collapsed": true});
+							}
+
+							scope.isLoading = false;
+						});
+					}
+				}else{
+					if (scope.filter) {
+						var searchurl = ":host/search/" + scope.db + "/" + scope.modelName;
+						var query = {"fulltext": scope.filter};
+						if (!scope.embedded || (scope.embedded && scope.selectedItemId != null)){
+							xcDataFactory.getStore(scope.datastoreType)
+							.allfilter(searchurl, query).then( function(res) {
+
+								var numRes = res.data.length;
+
+								if (scope.type == 'categorised' || scope.type=='accordion') {
+
+									scope.groups = xcUtils.getGroups( res.data, scope.groupBy, scope.orderBy, scope.orderReversed );
+									scope.isLoading = false;
+
+									//auto load first entry in the first group
+									if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
+
+										if (scope.groups.length>0) {
+											if (scope.groups[0].entries.length>0) { scope.select( scope.groups[0].entries[0] ); }
+											if (scope.type == 'accordion') {		//auto expand first group
+												scope.groups[0].collapsed = false;
+											}
+										}
+									}
+
+								} else {			//flat or detailed
+
+									//sort the results
+									res.data.sort( xcUtils.getSortByFunction( scope.orderBy, scope.orderReversed ) );
+
+						      scope.items = res.data;
+									scope.isLoading = false;
+									scope.totalNumItems = res.count;
+									scope.hasMore = scope.itemsShown < scope.totalNumItems;
+
+									//auto load first entry in the list
+									if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
+										scope.select( res.data[0] );
+									}
+
+								}
+
+							});
+						}
+					}else{
+						if (!scope.embedded || (scope.embedded && scope.selectedItemId != null)){
+							xcDataFactory.getStore(scope.datastoreType)
+							.all(url).then( function(res) {
+
+								var numRes = res.data.length;
+
+
+								if (scope.filterBy && scope.filterValue) {
+									//filter the result set
+
+									var filteredRes = [];
+
+									angular.forEach( res.data, function(entry, idx) {
+
+										if (entry[scope.filterBy] == scope.filterValue) {
+											filteredRes.push( entry);
+										}
+									});
+
+									res.data = filteredRes;
+
+								}
+
+
+								if (scope.type == 'categorised' || scope.type=='accordion') {
+
+									scope.groups = xcUtils.getGroups( res.data, scope.groupBy, scope.orderBy, scope.orderReversed );
+									scope.isLoading = false;
+
+									//auto load first entry in the first group
+									if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
+
+										if (scope.groups.length>0) {
+											if (scope.groups[0].entries.length>0) { scope.select( scope.groups[0].entries[0] ); }
+											if (scope.type == 'accordion') {		//auto expand first group
+												scope.groups[0].collapsed = false;
+											}
+										}
+									}
+
+								} else {			//flat or detailed
+
+									//sort the results
+									res.data.sort( xcUtils.getSortByFunction( scope.orderBy, scope.orderReversed ) );
+
+						      scope.items = res.data;
+									scope.isLoading = false;
+									scope.totalNumItems = res.count;
+									scope.hasMore = scope.itemsShown < scope.totalNumItems;
+
+									//auto load first entry in the list
+									if (scope.autoloadFirst && !scope.selected && !bootcards.isXS() ) {
+										scope.select( res.data[0] );
+									}
+
+								}
+
+							});
+						}
+					}
+				}
+
+			}
+		};
 
 	return {
 
@@ -2015,8 +2081,13 @@ app.directive('xcList',
 
 			}
 
+			$scope.reloadData = function() {
+				loadData($scope);
+			}
+
 			$scope.clearSearch = function() {
 				$scope.filter = '';
+				loadData($scope);
 			};
 
 			$scope.colClass = function() {
@@ -3503,7 +3574,7 @@ angular.module("xc-list-heading.html", []).run(["$templateCache", function($temp
     "			<div class=\"row\">\n" +
     "			    <div class=\"col-xs-9\">\n" +
     "			      <div class=\"form-group\">\n" +
-    "				      <input type=\"text\" class=\"form-control\" ng-model=\"$parent.filter\" placeholder=\"Search {{::model.name}}...\">\n" +
+    "				      <input type=\"text\" class=\"form-control\" ng-model=\"$parent.filter\" ng-enter=\"reloadData()\" placeholder=\"Search {{::model.name}}...\">\n" +
     "				      <a class=\"fa fa-times-circle fa-lg clearer\" ng-click=\"clearSearch()\" ng-show=\"$parent.filter\"></a>\n" +
     "				      <i class=\"fa fa-search\"></i>\n" +
     "			      </div>\n" +
