@@ -39,5 +39,6 @@
     "morris": {
         "ignore": true
     }
-  }
+  }, 
+  "main": "index.html"
 }
