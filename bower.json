@@ -34,6 +34,9 @@
   "resolutions": {
     "angular": "~1.3.8"
   }, 
+  "ignoredDependencies": [
+    "morris"
+  ], 
   "overrides": {
     "morris": {
         "ignore": true
